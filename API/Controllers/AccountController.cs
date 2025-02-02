@@ -10,6 +10,7 @@ using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace API.Controllers
 {
@@ -48,9 +49,13 @@ namespace API.Controllers
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto){
-            if (await _userManager.FindByEmailAsync(registerDto.Email) != null) return BadRequest("Email taken");
+            if (await _userManager.FindByEmailAsync(registerDto.Email) != null){ 
+                ModelState.AddModelError("email", "Email taken");
+                return BadRequest("Email taken");}
 
-            if (await _userManager.FindByNameAsync(registerDto.Username) != null) return BadRequest("Username taken");
+            if (await _userManager.FindByNameAsync(registerDto.Username) != null){ 
+                ModelState.AddModelError("username", "Username taken");
+                return BadRequest("Username taken");}
 
             var user = new AppUser
             {
